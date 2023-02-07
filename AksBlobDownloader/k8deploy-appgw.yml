@@ -1,0 +1,68 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: downloadtest-gw
+  labels:
+    app: downloadtest-gw
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: downloadtest-gw
+  template:
+    metadata:
+      labels:
+        app: downloadtest-gw
+    spec:
+      containers:
+        - name: downloadtest
+          image: AZURE_CONTAINER_REGISTRY.azurecr.io/POD_LABEL
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env: 
+              - name: AZURE_STORAGE_ACCOUNT 
+                valueFrom: 
+                  secretKeyRef: 
+                    name: downloadtest-secret 
+                    key: AZURE_STORAGE_ACCOUNT 
+              - name: AZURE_STORAGE_KEY 
+                valueFrom: 
+                  secretKeyRef: 
+                    name: downloadtest-secret 
+                    key: AZURE_STORAGE_KEY 
+              - name: CONTAINER_NAME 
+                valueFrom: 
+                  secretKeyRef: 
+                    name: downloadtest-secret 
+                    key: CONTAINER_NAME 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: downloadtest-gw
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    app: downloadtest-gw
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-appgateway
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+              name: downloadtest-gw
+              port: 
+                number: 80  
