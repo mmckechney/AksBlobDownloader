@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/twogig.bin
+/onepointfivegig.bin
+/onegig.bin
+/download.zip

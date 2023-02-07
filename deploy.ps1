@@ -164,7 +164,14 @@ while($ingressIP -eq "")
 
 Write-Host "To test the downloads, use these URLs for the different file sizes" -ForegroundColor DarkGreen
 
+
+Write-Host "Method that uses ''blobClient.OpenReadAsync()'' for stream downloading" -ForegroundColor Yellow
 Write-Host "http://$ingressIP/Home/Download?filename=onegig.bin" -ForegroundColor Cyan
 Write-Host "http://$ingressIP/Home/Download?filename=onepointfivegig.bin" -ForegroundColor Cyan
 Write-Host "http://$ingressIP/Home/Download?filename=twogig.bin" -ForegroundColor Cyan
+
+Write-Host "Method that uses ''blobClient.DownloadToAsync()'' for stream downloading" -ForegroundColor Yellow
+Write-Host "http://$ingressIP/Home/Download2?filename=onegig.bin" -ForegroundColor Cyan
+Write-Host "http://$ingressIP/Home/Download2?filename=onepointfivegig.bin" -ForegroundColor Cyan
+Write-Host "http://$ingressIP/Home/Download2?filename=twogig.bin" -ForegroundColor Cyan
 

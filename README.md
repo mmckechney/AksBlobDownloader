@@ -37,8 +37,30 @@ It will then:
 
 Once the ingress is assigned an external IP, the commandline output will display 3 URLs you can use to test downloading each file
 
+### The 'Download' method uses "blobClient.OpenReadAsync()" for stream downloading
+
 ```
+# Using curl to download the files with optional rate limiting
 http://<ip address>/Home/Download?filename=onegig.bin
 http://<ip address>/Home/Download?filename=onepointfivegig.bin
 http://<ip address>/Home/Download?filename=twogig.bin
+ 
+# Using curl to download the files with optional rate limiting
+curl http://<ip address>/Home/Download?filename=onegig.bin --output onegig.bin --limit-rate 200K
+curl http://<ip address>/Home/Download?filename=onepointfivegig.bin --output onepointfivegig.bin --limit-rate 200K
+curl http://<ip address>/Home/Download?filename=twogig.bin --output twogig.bin --limit-rate 200K
+```
+
+### The 'Download2' method uses  blobClient.DownloadStreaming() with BlobDownloadStreamingResult for stream downloading
+
+```
+# Using curl to download the files with optional rate limiting
+http://<ip address>/Home/Download2?filename=onegig.bin
+http://<ip address>/Home/Download2?filename=onepointfivegig.bin
+http://<ip address>/Home/Download2?filename=twogig.bin
+ 
+# Using curl to download the files with optional rate limiting
+curl http://<ip address>/Home/Download2?filename=onegig.bin --output onegig.bin --limit-rate 200K
+curl http://<ip address>/Home/Download2?filename=onepointfivegig.bin --output onepointfivegig.bin --limit-rate 200K
+curl http://<ip address>/Home/Download2?filename=twogig.bin --output twogig.bin --limit-rate 200K
 ```
