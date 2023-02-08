@@ -13,10 +13,7 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "AZURE_STORAGE_ACCOUNT": "dwnmwm7sa",
-        "CONTAINER_NAME": "largefile",
-        "AZURE_STORAGE_KEY": "mVMGchp5GHy5MOobGihx7xdVvLcm/0dFnzL02v0Uk9YtUM5AKu9fjEkaxzoA9sn38AM+nUdYvHWa+AStU5fGMw=="
+        "ASPNETCORE_ENVIRONMENT": "Development"      
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7040;http://localhost:5261"

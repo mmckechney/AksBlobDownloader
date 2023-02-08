@@ -58,23 +58,25 @@ az storage container create --name $containerName --account-name $storageAccount
 # Neworking
 ##############################
 
-Write-Host "Creating Network Security Group $nsgName" -ForegroundColor DarkGreen
+Write-Host "Creating Network Security Group and Port 80 rule for NSG: $nsgName" -ForegroundColor DarkGreen
 az network nsg create  --resource-group $resourceGroupName --name $nsgName -o table
+az network nsg rule create --resource-group $resourceGroupName --nsg-name $nsgName --name Allow-Port80 --priority 101 --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges "80" --access Allow --protocol "*" --description "Allow Port 80" -o table
 
 Write-Host "Creating Network Security Group $appGwNsg" -ForegroundColor DarkGreen
 az network nsg create  --resource-group $resourceGroupName --name $appGwNsg -o table
 
-Write-Host "Creating NSG rule for application gateway" -ForegroundColor DarkGreen
-az network nsg rule create --resource-group $resourceGroupName --nsg-name $appGwNsg --name Allow-AppGateway --priority 100 --source-address-prefixes GatewayManager --source-port-ranges '65200-65535' --destination-address-prefixes '*' --destination-port-ranges "*" --access Allow --protocol "*" --description "Allow Application Gateway" -o table
+Write-Host "Creating NSG rule for application gateway and Port 80" -ForegroundColor DarkGreen
+az network nsg rule create --resource-group $resourceGroupName --nsg-name $appGwNsg --name Allow-AppGateway --priority 100 --source-address-prefixes GatewayManager --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges "65200-65535" --access Allow --protocol "*" --description "Allow Application Gateway" -o table
+az network nsg rule create --resource-group $resourceGroupName --nsg-name $appGwNsg --name Allow-Port80 --priority 101 --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges "80" --access Allow --protocol "*" --description "Allow Port 80" -o table
 
 Write-Host "Creating VNET $aksVnet and AKS subnet: $aksSubnet, for the AKS cluster $aksClusterName" -ForegroundColor DarkGreen
-az network vnet create --resource-group $resourceGroupName --name $aksVnet  --address-prefixes 10.180.0.0/20 --subnet-name $aksSubnet --subnet-prefix 10.180.0.0/22  -o table #--network-security-group  $nsgName
+az network vnet create --resource-group $resourceGroupName --name $aksVnet  --address-prefixes 10.180.0.0/20 --subnet-name $aksSubnet --subnet-prefix 10.180.0.0/22  -o table --network-security-group  $nsgName
 
 Write-Host "Retrieving subnet ID value from VNET '$aksVnet' and Subnet '$aksSubnet '"
 $aksSubnetId = az network vnet subnet show --resource-group $resourceGroupName --vnet-name $aksVnet --name $aksSubnet --query id -o tsv
 
 Write-Host "Creating App Gateway Subnet: $appGwSubnet, for the AKS cluster $aksClusterName" -ForegroundColor DarkGreen
-az network vnet subnet create --resource-group $resourceGroupName --vnet-name $aksVnet --name $appGwSubnet --address-prefixes 10.180.15.0/24  -o table #--network-security-group  $appGwNsg
+az network vnet subnet create --resource-group $resourceGroupName --vnet-name $aksVnet --name $appGwSubnet --address-prefixes 10.180.15.0/24  -o table --network-security-group  $appGwNsg
 
 Write-Host "Retrieving subnet ID value from VNET '$aksVnet' and Subnet '$appGwSubnet '"
 $appGwSubnetId = az network vnet subnet show --resource-group $resourceGroupName --vnet-name $aksVnet --name $appGwSubnet --query id -o tsv
@@ -151,7 +153,7 @@ Get-Content -Path .\AksBlobDownloader\k8deploy-appgw.yml | % {$_.replace("AZURE_
 #######################################
 $ingressIP = ""
 
-while($ingressIP -eq "")
+while($ingressIP -eq "" -or $null -eq $ingressIP)
 {
     Write-Host "Waiting for ingress to get IP address" -ForegroundColor DarkGreen
     Start-Sleep -Seconds 10
