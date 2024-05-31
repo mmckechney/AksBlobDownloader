@@ -42,7 +42,7 @@ kind: Service
 metadata:
   name: downloadtest-gw
 spec:
-  type: LoadBalancer
+  type: ClusterIP #LoadBalancer
   ports:
   - port: 80
     protocol: TCP
